@@ -1,0 +1,15 @@
+# node
+node_modules/
+dist/
+build/
+
+# environment
+.env
+
+# logs
+
+logs/
+*.log/
+
+.vscode/
+*.tsbuildinfo
