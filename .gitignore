@@ -13,3 +13,4 @@ logs/
 
 .vscode/
 *.tsbuildinfo
+/src/generated/prisma
