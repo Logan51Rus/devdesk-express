@@ -1,12 +1,17 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import { errors } from 'celebrate'; 
+import userRouter from './src/routes/usersRoutes';
 import 'dotenv/config';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('DevDesk is running!')
-})
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use('/api/users', userRouter);
+
+app.use(errors());
 
 app.listen(PORT, () => {
     console.log(`App is listening on port ${PORT}`);
