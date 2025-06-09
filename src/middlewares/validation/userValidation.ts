@@ -11,4 +11,13 @@ const validateUserRegistrationBody = celebrate({
     [Segments.BODY]: userRegistrationSchema,
 })
 
-export { validateUserRegistrationBody }
+const userLoginSchema = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().min(6).max(100).required(),
+})
+
+const validateUserLoginBody = celebrate({
+    [Segments.BODY]: userLoginSchema
+})
+
+export { validateUserRegistrationBody, validateUserLoginBody }

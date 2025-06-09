@@ -61,6 +61,12 @@ export const loginUserService = async (email: string, password: string) => {
             return {
                 accessToken,
                 refreshToken,
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role
+                }
             }
         } else {
             throw new Error('Incorrect email or password')
