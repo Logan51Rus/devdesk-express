@@ -55,8 +55,8 @@ export const loginUserService = async (email: string, password: string) => {
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (isMatch) {
-            const accessToken = jwt.sign({ id: user.id }, 'some-secret-access-key', { expiresIn: '2h' });
-            const refreshToken = jwt.sign({ id: user.id }, 'some-secret-refresh-key', { expiresIn: '30d'});
+            const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN!, { expiresIn: '2h' });
+            const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN!, { expiresIn: '30d'});
 
             return {
                 accessToken,
