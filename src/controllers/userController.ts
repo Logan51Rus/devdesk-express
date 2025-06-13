@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import { registerUserService, loginUserService } from "../services/userService";
+import { registerUserService, loginUserService, refreshTokenService } from "../services/userService";
 
 export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -9,9 +9,9 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
         res.status(201).json(user)
     } catch (error) {
         if (error instanceof Error) {
-            res.status(400).json({ error: error.message})
+            res.status(400).send({ error: error.message })
         } else {
-            res.status(500).json({ error: 'Unexpected error' });
+            res.status(500).send({ error: 'Unexpected error' });
         }
     }
 }
@@ -21,16 +21,45 @@ export const loginUser = async (req: Request, res: Response) => {
         const { email, password } = req.body;
         const { accessToken, refreshToken, user } = await loginUserService(email, password);
 
-        res.cookie("REFRESH_TOKEN", refreshToken, {
+        res.cookie('REFRESH_TOKEN', refreshToken, {
             sameSite: 'lax',
             secure: true,
             httpOnly: true,
             maxAge: 30 * 24 * 60 * 60 * 1000,
         })
-        res.status(200).send({ accessToken, user })
+        res.status(200).json({ accessToken, user })
     } catch (error) {
         if (error instanceof Error) {
             res.status(401).send({ message: error.message})
         } 
     }
 } 
+
+export const refreshToken = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const token = req.cookies.REFRESH_TOKEN;
+
+        if (!token) {
+            res.status(400).json({ message: 'No refresh token provided'})
+            return;
+        }
+
+        const { accessToken } = await refreshTokenService(token);
+
+        res.status(200).json({ accessToken });
+    } catch (error) {
+        if (error instanceof Error) {
+            res.status(401).send({ message: error.message })
+        } 
+    }
+}
+
+export const logoutUser = async (_req: Request, res: Response) => {
+    res.clearCookie('REFRESH_TOKEN', {
+        sameSite: 'lax',
+        secure: true,
+        httpOnly: true,
+    })
+
+    res.status(204).json({ message: 'User successfully logged out'});
+}

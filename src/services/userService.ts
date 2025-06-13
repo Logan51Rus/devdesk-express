@@ -1,7 +1,6 @@
-import { Request, Response } from 'express';
 import { prisma } from '../config/prisma';
 import bcrypt from "bcryptjs";
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { IUser } from '../models/user';
 
 export const registerUserService = async (data: IUser) => {
@@ -76,6 +75,26 @@ export const loginUserService = async (email: string, password: string) => {
             throw new Error(`An error occured during user authorization: ${error.message}`);
         } else {
             throw new Error('Unknown error during authorization');
+        }
+    }
+}
+
+export const refreshTokenService = async (refreshToken: string) => {
+    let payload;
+
+    try {
+        payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN!) as JwtPayload
+        const { id } = payload;
+        const accessToken = jwt.sign({ id }, process.env.ACCESS_TOKEN!, { expiresIn: '2h' });
+
+        return {
+             accessToken
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(`An error occured during refresh of token: ${error.message}`);
+        } else {
+            throw new Error('Unknown error during refresh of token');
         }
     }
 }
