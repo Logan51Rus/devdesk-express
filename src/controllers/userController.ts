@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import { registerUserService, loginUserService, refreshTokenService } from "../services/userService";
+import { registerUserService, loginUserService, refreshTokenService, getUserById } from "../services/userService";
 
 export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -62,4 +62,17 @@ export const logoutUser = async (_req: Request, res: Response) => {
     })
 
     res.status(204).json({ message: 'User successfully logged out'});
+}
+
+export const getUser = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.user as { id: string };
+        const user = await getUserById(id);
+
+        res.status(200).json(user)
+    } catch (error) {
+        if (error instanceof Error) {
+            res.status(404).send({ message: error.message})
+        } 
+    }
 }

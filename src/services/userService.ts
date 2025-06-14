@@ -98,3 +98,27 @@ export const refreshTokenService = async (refreshToken: string) => {
         }
     }
 }
+
+export const getUserById = async (userId: string) => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            }
+        });
+
+        if (!user) {
+            throw new Error(`User with id ${userId} is not found.`)
+        }
+
+        const { password, ...userData } = user;
+
+        return userData
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(`An error occured while receiving user data: ${error.message}`);
+        } else {
+            throw new Error('Unknown error occured while receiving user data');
+        }
+    }
+}
