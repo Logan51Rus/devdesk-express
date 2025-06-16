@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import { registerUserService, loginUserService, refreshTokenService, getUserById } from "../services/userService";
+import { registerUserService, loginUserService, refreshTokenService, getUserById, updateUserById, deleteUserById } from "../services/userService";
 
 export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -30,7 +30,7 @@ export const loginUser = async (req: Request, res: Response) => {
         res.status(200).json({ accessToken, user })
     } catch (error) {
         if (error instanceof Error) {
-            res.status(401).send({ message: error.message})
+            res.status(401).send({ message: error.message })
         } 
     }
 } 
@@ -72,7 +72,36 @@ export const getUser = async (req: Request, res: Response) => {
         res.status(200).json(user)
     } catch (error) {
         if (error instanceof Error) {
-            res.status(404).send({ message: error.message})
+            res.status(404).send({ message: error.message })
+        } 
+    }
+}
+
+export const updateUser = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.user as { id: string };
+        const data = req.body;
+
+        const updatedUser = await updateUserById(id, data);
+
+        res.status(200).json(updatedUser)
+    } catch (error) {
+        if (error instanceof Error) {
+            res.status(400).send({ message: error.message})
+        }
+    }
+}
+
+export const deleteUser = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.user as { id: string };
+        
+        await deleteUserById(id);
+
+        res.status(204).send('User has been succesfully deleted')
+    } catch (error) {
+         if (error instanceof Error) {
+            res.status(404).send({ message: error.message })
         } 
     }
 }

@@ -1,7 +1,7 @@
 import { prisma } from '../config/prisma';
 import bcrypt from "bcryptjs";
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { IUser } from '../models/user';
+import { IUser, UserUpdateData } from '../models/user';
 
 export const registerUserService = async (data: IUser) => {
     try {
@@ -122,3 +122,50 @@ export const getUserById = async (userId: string) => {
         }
     }
 }
+
+export const updateUserById = async (userId: string, data: UserUpdateData) => {
+    try {
+        const updatedUser = await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: data
+        })
+
+        const { password, ...updatedUserData } = updatedUser;
+
+        return updatedUserData;
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(`An error occured while updating user data: ${error.message}`);
+        } else {
+            throw new Error('Unknown error occured while updating user data');
+        }
+    }
+}
+
+export const deleteUserById = async (userId: string) => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            }
+        });
+
+        if (!user) {
+            throw new Error(`User with id ${userId} is not found.`)
+        }
+
+        await prisma.user.delete({
+            where: {
+                id: userId
+            }
+        })
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(`An error occured while deleting user: ${error.message}`);
+        } else {
+            throw new Error('Unknown error occured while deleting user');
+        }
+    }
+} 

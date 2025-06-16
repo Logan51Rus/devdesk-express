@@ -9,3 +9,8 @@ export interface IUser {
     name: string,
     role: Roles
 }
+
+export interface UserUpdateData {
+    email?: string,
+    name?: string
+}
