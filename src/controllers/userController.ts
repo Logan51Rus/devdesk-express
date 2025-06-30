@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import { registerUserService, loginUserService, refreshTokenService, getUserById, updateUserById, deleteUserById } from "../services/userService";
 
-export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
+export const registerUser = async (req: Request, res: Response) => {
     try {
         const { id, ...data } = req.body;
         const user = await registerUserService(data);
